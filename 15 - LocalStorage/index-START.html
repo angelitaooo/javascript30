@@ -31,7 +31,7 @@
 <script>
   const addItems = document.querySelector('.add-items');
   const itemsList = document.querySelector('.plates');
-  const items = JSON.parse(localStorage.getItem('items')) || [];
+  let items = JSON.parse(localStorage.getItem('items')) || [];
   const deleteItems = document.querySelector(".delete-all");
   const checkAll = document.querySelector(".check-all");
   const uncheckAll = document.querySelector(".uncheck");
@@ -72,19 +72,28 @@
 
    }
 
-   function deleteAll() {
-      const children = Array.from(itemsList.querySelectorAll("li"));
-      children.forEach(child => child.remove());
-     
-      localStorage.removeItem('items', JSON.stringify(items));      
+  function deleteAll() {
+    const children = Array.from(itemsList.querySelectorAll("li"));
+    children.forEach(child => child.remove());
+    items = [];
+    localStorage.removeItem('items');      
   }
   
   function checkAllItems() {
      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
      const checkboxesArray = Array.from(checkboxes);
-     console.log(checkboxesArray);
+     // Check all checkboxes
      checkboxesArray.forEach(checkbox =>  { checkbox.checked = true });
 
+     // Update items
+     const allItemsChecked = items.map(item => {
+       return {
+         done: true,
+         text: item.text.toUpperCase()
+       }
+     });
+
+     localStorage.setItem('items', JSON.stringify(allItemsChecked));
   }
 
   function uncheckItems() {
@@ -93,6 +102,13 @@
      console.log(checkboxesArray);
      checkboxesArray.forEach(checkbox =>  { checkbox.checked = false });
 
+     const allItemsUnchecked = items.map(item => {
+       return {
+         done: false,
+         text: item.text
+       }
+     });
+     localStorage.setItem('items', JSON.stringify(allItemsUnchecked));
   }
 
   addItems.addEventListener('submit', addItem);
